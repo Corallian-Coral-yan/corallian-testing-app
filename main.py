@@ -1,5 +1,5 @@
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QAction
+from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QAction, QVBoxLayout, QWidget
 from annotator import ZoomableAnnotationView
 from config import IMAGE_FOLDER
 
@@ -7,19 +7,29 @@ from config import IMAGE_FOLDER
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+
         self.setWindowTitle("Coral Annotation Tool")
         self.setGeometry(100, 100, 1200, 800)
 
-        self.viewer = ZoomableAnnotationView()
-        self.setCentralWidget(self.viewer)
+        # Create central widget and layout
+        central_widget = QWidget(self)
+        layout = QVBoxLayout(central_widget)
 
-        # Menu
+        # Pass layout to ZoomableAnnotationView
+        self.viewer = ZoomableAnnotationView(layout)  # Pass the layout here
+        layout.addWidget(self.viewer)  # Add the viewer to the layout
+
+        # Set the central widget for the window
+        self.setCentralWidget(central_widget)
+
+        # Menu Actions
         open_action = QAction("Open Image", self)
         open_action.triggered.connect(self.open_image)
 
         save_action = QAction("Save Annotations", self)
         save_action.triggered.connect(self.viewer.save_annotations)
 
+        # Menu Bar
         menubar = self.menuBar()
         file_menu = menubar.addMenu("File")
         file_menu.addAction(open_action)
